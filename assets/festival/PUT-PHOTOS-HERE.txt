@@ -1,0 +1,2 @@
+Festival photos: festival-01.jpg through festival-16.jpg are currently populated.
+Add/replace files using the same naming pattern if you want to update the festival gallery.
