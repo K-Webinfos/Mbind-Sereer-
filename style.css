@@ -169,3 +169,34 @@ html { scroll-behavior: smooth; }
   }
   .motion-reveal { opacity: 1 !important; transform: none !important; }
 }
+
+
+/* K-WEB mobile compact sections: expand content only when requested */
+.mobileFoldToggle { display:none; }
+.mobileFoldContent { display:contents; }
+@media (max-width: 600px) {
+  .pad { padding-top: 48px; padding-bottom: 48px; }
+  .mobileFoldToggle {
+    display:flex; align-items:center; justify-content:space-between; gap:14px;
+    width:100%; margin:18px 0 0; padding:14px 16px;
+    border:1px solid rgba(154,118,85,.42); border-radius:12px;
+    background:rgba(154,118,85,.08); color:inherit; text-align:left;
+    font:600 .9rem/1.35 'DM Sans',sans-serif; cursor:pointer;
+    transition:background .25s ease, border-color .25s ease, transform .25s ease;
+  }
+  .mobileFoldToggle::after { content:'＋'; flex:0 0 auto; font-size:1.25rem; color:#9a7655; }
+  .mobileFoldToggle[aria-expanded="true"]::after { content:'−'; }
+  .mobileFoldToggle:active { transform:scale(.99); }
+  .mobileFoldContent { display:block; }
+  .mobileFoldContent[hidden] { display:none !important; }
+  .mobileFoldContent.is-opening { animation:mobileFoldIn .28s ease both; }
+  #hebergement .mobileFoldContent, #saveurs .mobileFoldContent,
+  #activites .mobileFoldContent, #festival .mobileFoldContent,
+  #galerie .mobileFoldContent, #reservation .mobileFoldContent,
+  #contact .mobileFoldContent { padding-top:18px; }
+  #hebergement .room { margin-top:0; }
+  #contact .map iframe, #contact .map { min-height:280px; }
+  #festival .festivalGrid { margin-top:16px; }
+}
+@keyframes mobileFoldIn { from { opacity:0; transform:translateY(-5px); } to { opacity:1; transform:translateY(0); } }
+@media (prefers-reduced-motion: reduce) { .mobileFoldContent.is-opening { animation:none; } }

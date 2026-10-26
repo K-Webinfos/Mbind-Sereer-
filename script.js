@@ -169,3 +169,60 @@ document.addEventListener('DOMContentLoaded', () => {
     img.decoding = 'async';
   });
 });
+
+
+/* Mobile-only optional sections. Desktop layout remains fully expanded. */
+document.addEventListener('DOMContentLoaded', () => {
+  const mobileQuery = window.matchMedia('(max-width: 600px)');
+  const configs = [
+    { section: '#hebergement', selector: ['.room'], label: 'Voir nos chambres' },
+    { section: '#saveurs', selector: ['#dishes'], label: 'Voir nos plats et boissons' },
+    { section: '#activites', selector: ['#activities'], label: 'Découvrir les activités' },
+    { section: '#festival', selector: ['.festivalVideo', '.festivalPhotosIntro', '#festivalGrid'], label: 'Voir les vidéos et photos du festival' },
+    { section: '#galerie', selector: ['#gallery'], label: 'Ouvrir la galerie (20 photos)' },
+    { section: '#reservation', selector: ['#bookingForm'], label: 'Afficher le formulaire de réservation' },
+    { section: '#contact', selector: ['.contact'], label: 'Voir les coordonnées et la carte' }
+  ];
+  const folds = [];
+  configs.forEach((config, index) => {
+    const section = document.querySelector(config.section);
+    if (!section) return;
+    const targets = config.selector.map(sel => section.querySelector(sel)).filter(Boolean);
+    if (!targets.length) return;
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'mobileFoldToggle';
+    button.textContent = config.label;
+    button.setAttribute('aria-expanded', 'false');
+    button.setAttribute('aria-controls', `mobile-fold-content-${index}`);
+    const content = document.createElement('div');
+    content.className = 'mobileFoldContent';
+    content.id = `mobile-fold-content-${index}`;
+    targets[0].parentNode.insertBefore(button, targets[0]);
+    targets[0].parentNode.insertBefore(content, targets[0]);
+    targets.forEach(target => content.appendChild(target));
+    const setOpen = (open) => {
+      button.setAttribute('aria-expanded', String(open));
+      if (mobileQuery.matches) {
+        content.hidden = !open;
+        content.classList.toggle('is-opening', open);
+      } else {
+        content.hidden = false;
+        content.classList.remove('is-opening');
+      }
+    };
+    button.addEventListener('click', () => setOpen(button.getAttribute('aria-expanded') !== 'true'));
+    folds.push({ button, content, setOpen });
+  });
+  const syncMode = () => folds.forEach(({button, content, setOpen}) => {
+    if (mobileQuery.matches) setOpen(false);
+    else {
+      button.setAttribute('aria-expanded', 'true');
+      content.hidden = false;
+      content.classList.remove('is-opening');
+    }
+  });
+  syncMode();
+  if (mobileQuery.addEventListener) mobileQuery.addEventListener('change', syncMode);
+  else mobileQuery.addListener(syncMode);
+});
