@@ -123,3 +123,49 @@ const bookingForm=document.querySelector('#bookingForm');bookingForm.onsubmit=e=
 // Hero news box: rotate its accent palette every four seconds until real announcements are added.
 const newsBox=document.querySelector('.newsBox');
 if(newsBox){const palettes=[['#f0c987','#3b2417'],['#b7d8bd','#183c2a'],['#d7c5f2','#34204f'],['#f3b5a7','#4b211b'],['#b9dbe8','#173847']];let paletteIndex=0;const applyNewsPalette=()=>{const [accent,ink]=palettes[paletteIndex];newsBox.style.setProperty('--news-accent',accent);newsBox.style.setProperty('--news-ink',ink);newsBox.classList.remove('newsPulse');void newsBox.offsetWidth;newsBox.classList.add('newsPulse');paletteIndex=(paletteIndex+1)%palettes.length;};applyNewsPalette();setInterval(applyNewsPalette,4000);}
+
+
+
+/* K-WEB motion layer: scroll reveals, staggered cards, subtle header feedback */
+document.addEventListener('DOMContentLoaded', () => {
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const header = document.querySelector('.header');
+  const revealTargets = document.querySelectorAll(
+    'section:not(#accueil) .heading, section:not(#accueil) .intro, section:not(#accueil) .room, ' +
+    '.dishGrid > *, .activityGrid > *, .galleryGrid > *, .festivalIntro, .festivalVideo, ' +
+    '.booking form, .bookIntro, .contact > *, .note'
+  );
+
+  revealTargets.forEach((el, index) => {
+    el.classList.add('motion-reveal');
+    // Stagger only a little, so long galleries don't feel sluggish.
+    const groupIndex = index % 5;
+    el.style.setProperty('--reveal-delay', `${groupIndex * 65}ms`);
+  });
+
+  if (reduceMotion || !('IntersectionObserver' in window)) {
+    revealTargets.forEach(el => el.classList.add('is-visible'));
+  } else {
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -35px 0px' });
+    revealTargets.forEach(el => observer.observe(el));
+  }
+
+  const updateHeader = () => {
+    if (header) header.classList.toggle('is-scrolled', window.scrollY > 18);
+  };
+  updateHeader();
+  window.addEventListener('scroll', updateHeader, { passive: true });
+
+  // Keep the mobile/desktop experience fluid when image-heavy sections appear.
+  document.querySelectorAll('.galleryGrid img, .dishGrid img, .activityGrid img, .photo img').forEach(img => {
+    img.loading = 'lazy';
+    img.decoding = 'async';
+  });
+});
